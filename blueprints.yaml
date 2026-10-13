@@ -34,6 +34,18 @@ form:
       validate:
         type: bool
 
+    auto_stamp:
+      type: toggle
+      label: PLUGIN_AI_LABEL.AUTO_STAMP
+      help: PLUGIN_AI_LABEL.AUTO_STAMP_HELP
+      highlight: 1
+      default: 0
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
     section_wording:
       type: section
       title: PLUGIN_AI_LABEL.SECTION_WORDING

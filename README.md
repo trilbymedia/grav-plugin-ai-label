@@ -8,6 +8,7 @@ Stamps a visible label such as **AI generated** or **AI altered** on images that
 ## Requirements
 
 - Grav 2.0 or newer, PHP 8.3 or newer
+- Grav 2.2.8 or newer for the `auto_stamp` setting, which labels Markdown images too
 - PHP's GD extension with FreeType, which Grav's image processing already needs
 
 No Composer packages. A copy of DejaVu Sans Bold is bundled for the label text.
@@ -37,7 +38,17 @@ ai_status: generated
 
 Values are not case sensitive. Anything else counts as not flagged.
 
-In **Admin2** the media metadata editor (the Edit metadata button on a page media item, or the Media manager) shows an **AI content** field when this plugin is enabled. Type `none`, `altered` or `generated` and save. The field is a text box for now, because the media metadata editor only knows text, multi-line and tag fields; it becomes a proper choice once the editor supports one. Turn the field off with the **AI field in the media editor** setting.
+In **Admin2** the media metadata editor (the Edit metadata button on a page media item, or the Media manager) shows an **AI content** dropdown when this plugin is enabled. Pick **No AI used**, **AI altered** or **AI generated** and save; it is written to the image's `.meta.yaml` as `none`, `altered` or `generated`. Turn the dropdown off with the **AI field in the media editor** setting.
+
+## Labelling every flagged image
+
+Turn on **Label every flagged image** (`auto_stamp: true`) and every image flagged `generated` or `altered` gets the label wherever it is shown: images in page Markdown (`![](hero.jpg)`), images in your templates, and every size of a srcset made with `derivatives()`. No template changes are needed. The label goes in the default position at the default size.
+
+This needs **Grav 2.2.8 or later**, which lets plugins act on every image as it is loaded. On older versions the setting has no effect, and you label images in templates with the `ai_label` filter below.
+
+With `auto_stamp` on, the `ai_label` filter leaves an image that is already labelled as it is, so an image never gets two labels, and the filter's position and size are not used. Images that are not flagged, and images flagged `none`, are served exactly as before.
+
+The label is added when the image is loaded, so it comes before any action on the image in Markdown or Twig. A `resize` shrinks the label along with the image, and a crop such as `cropZoom` can cut it off. `derivatives()` is not affected: each srcset size gets its own label. If your pages resize or crop flagged images, leave `auto_stamp` off and add the filter after the action in your templates. Retina files saved next to an image (`hero@2x.jpg`) are not labelled by `auto_stamp`; use `derivatives()` for responsive images.
 
 ## Stamping the label in Twig
 
@@ -81,15 +92,16 @@ The label is placed with Grav's own `watermark()` image action, so it is placed 
 
 ### Markdown images
 
-Images in page Markdown (`![](hero.jpg)`) are not stamped yet. Grav core has no way for a plugin to act on every image, so for now use the filter in your theme templates.
+The filter only works in templates. To label images in page Markdown, turn on `auto_stamp` (Grav 2.2.8 or later), see above.
 
 ## Settings
 
 | Setting | Default | What it does |
 |---|---|---|
+| `auto_stamp` | `false` | Labels every flagged image, Markdown images and srcset sizes included, without the filter. Needs Grav 2.2.8 or later. |
 | `labels.generated` | empty | Wording for AI generated images. Empty uses the translated default. |
 | `labels.altered` | empty | Wording for AI altered images. Empty uses the translated default. |
-| `position` | `bottom-right` | Where the label goes when the filter is given no position. |
+| `position` | `bottom-right` | Where the label goes with `auto_stamp`, or when the filter is given no position. |
 | `size` | `30` | The largest share of the image width or height the label may take, in percent. On small images the label shrinks to fit. |
 | `font_size` | `24` | The largest text size, in pixels. The label is never scaled up beyond it. |
 | `text_color` | `#ffffff` | Text and icon color. |
@@ -100,7 +112,7 @@ Images in page Markdown (`![](hero.jpg)`) are not stamped yet. Grav core has no 
 | `radius` | `6` | Corner rounding, in pixels. |
 | `icon` | `sparkle` | `sparkle` for the built-in icon, `none`, or an image such as `user://images/ai-icon.png`. |
 | `font` | empty | A TrueType font such as `user://fonts/MyFont.ttf`. Empty uses the bundled DejaVu Sans Bold. |
-| `admin_field` | `true` | Adds the AI content field to the Admin2 media metadata editor. |
+| `admin_field` | `true` | Adds the AI content dropdown to the Admin2 media metadata editor. |
 
 Copy `ai-label.yaml` to `user/config/plugins/ai-label.yaml` to change them, or use the plugin settings in Admin2.
 
@@ -128,7 +140,7 @@ If `system.images.watermark.watermark_all` is on, labelled images keep the site 
 
 ## Development
 
-The label drawing is tested with PHPUnit, using a Grav checkout for the runner:
+The label drawing and the guard that keeps `auto_stamp` and the filter from labelling an image twice are tested with PHPUnit, using a Grav checkout for the runner:
 
 ```bash
 GRAV_ROOT=/path/to/grav php /path/to/grav/vendor/bin/phpunit

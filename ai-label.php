@@ -5,6 +5,7 @@ namespace Grav\Plugin;
 use Grav\Common\Media\Interfaces\ImageMediaInterface;
 use Grav\Common\Plugin;
 use Grav\Plugin\AiLabel\LabelRenderer;
+use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 use Twig\TwigFilter;
 
@@ -17,6 +18,11 @@ require_once __DIR__ . '/classes/LabelRenderer.php';
  * its `.meta.yaml`. The `ai_label` Twig filter stamps the label onto a flagged
  * image through Grav's own `watermark()` action, so the label is placed after
  * any resize or crop, reaches srcset derivatives, and is cached with the image.
+ *
+ * With `auto_stamp` on, the same label is queued on every flagged image from
+ * core's `onImageMediumReset` event (Grav 2.2.8 and later), which covers
+ * Markdown images too. Older versions never fire the event, so the setting
+ * does nothing there.
  */
 class AiLabelPlugin extends Plugin
 {
@@ -41,6 +47,15 @@ class AiLabelPlugin extends Plugin
     /** @var array<string, string> Label file stream by status, for this request */
     private array $files = [];
 
+    /**
+     * Images auto_stamp has labelled since they were last reset. The filter
+     * leaves these alone, so an image is never labelled twice. Only set while
+     * auto_stamp is on.
+     *
+     * @var \WeakMap<object, true>|null
+     */
+    private ?\WeakMap $autoStamped = null;
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -54,9 +69,34 @@ class AiLabelPlugin extends Plugin
             $this->addMetadataField();
         }
 
-        $this->enable([
-            'onTwigInitialized' => ['onTwigInitialized', 0],
-        ]);
+        $events = ['onTwigInitialized' => ['onTwigInitialized', 0]];
+        if ($this->config->get('plugins.ai-label.auto_stamp', false)) {
+            $events['onImageMediumReset'] = ['onImageMediumReset', 0];
+        }
+
+        $this->enable($events);
+    }
+
+    /**
+     * Core fires this on an image when it is loaded and again after each
+     * render, with the image back to its original (Grav 2.2.8 and later).
+     * Queues the label on a flagged image, so Markdown images and srcset
+     * derivatives get it without the filter.
+     */
+    public function onImageMediumReset(Event $event): void
+    {
+        $medium = $event['medium'];
+        if (!is_object($medium)) {
+            return;
+        }
+
+        // The reset dropped whatever label was queued before it.
+        $this->autoStamped ??= new \WeakMap();
+        unset($this->autoStamped[$medium]);
+
+        if ($this->queueLabel($medium)) {
+            $this->autoStamped[$medium] = true;
+        }
     }
 
     public function onTwigInitialized(): void
@@ -69,7 +109,8 @@ class AiLabelPlugin extends Plugin
     /**
      * `{{ image|ai_label('bottom-right', 25) }}`: queues the label on a flagged
      * image and returns the image, so more actions can follow. Unflagged
-     * images and anything that is not a raster image come back untouched.
+     * images, anything that is not a raster image, and images auto_stamp has
+     * already labelled come back untouched.
      *
      * @param mixed $medium
      * @param string|null $position e.g. `bottom-right`, `top left`, `center`
@@ -78,14 +119,33 @@ class AiLabelPlugin extends Plugin
      */
     public function stamp($medium, $position = null, $size = null)
     {
-        if (!$medium instanceof ImageMediaInterface || !method_exists($medium, 'watermark')) {
+        // Already labelled by auto_stamp: a second label would sit on top of it.
+        if ($this->autoStamped && is_object($medium) && isset($this->autoStamped[$medium])) {
             return $medium;
+        }
+
+        $this->queueLabel($medium, $position, $size);
+
+        return $medium;
+    }
+
+    /**
+     * Queues the label on a flagged raster image. Returns whether it did.
+     *
+     * @param mixed $medium
+     * @param string|null $position
+     * @param int|string|null $size
+     */
+    private function queueLabel($medium, $position = null, $size = null): bool
+    {
+        if (!$medium instanceof ImageMediaInterface || !method_exists($medium, 'watermark')) {
+            return false;
         }
 
         $status = $this->status($medium);
         $file = $status ? $this->labelFile($status) : null;
         if (!$file) {
-            return $medium;
+            return false;
         }
 
         $config = $this->config;
@@ -101,7 +161,7 @@ class AiLabelPlugin extends Plugin
 
         $medium->watermark($file, $position, $size);
 
-        return $medium;
+        return true;
     }
 
     /**
@@ -205,9 +265,7 @@ class AiLabelPlugin extends Plugin
      * Adds the AI status to the media metadata editor in Admin2 by adding a
      * field to the api plugin's `media_metadata.fields`, for this request only.
      *
-     * The api plugin knows text, textarea and tags fields. The field asks for
-     * `select` and lists its options, so it turns into a choice once the api
-     * plugin supports one; until then the api plugin shows it as a text field.
+     * It is a `select`, which Admin2 shows as a dropdown of the three statuses.
      */
     private function addMetadataField(): void
     {

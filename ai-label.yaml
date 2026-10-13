@@ -1,5 +1,10 @@
 enabled: true
 
+# Stamps the label on every flagged image, including images in page Markdown and
+# every srcset size, without the ai_label filter. Needs Grav 2.2.8 or later; on
+# older versions it has no effect.
+auto_stamp: false
+
 # Label wording per status. Empty uses the translated default
 # (PLUGIN_AI_LABEL.LABEL_GENERATED / LABEL_ALTERED). Plain text or a translation key.
 labels:
@@ -31,5 +36,5 @@ icon: sparkle
 # A .ttf font such as user://fonts/MyFont.ttf. Empty uses the bundled DejaVu Sans Bold.
 font: ''
 
-# Adds an "AI content" field to the media metadata editor in Admin2.
+# Adds an "AI content" dropdown to the media metadata editor in Admin2.
 admin_field: true

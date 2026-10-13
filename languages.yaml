@@ -5,10 +5,12 @@ en:
   PLUGIN_AI_LABEL: &en
     LABEL_GENERATED: 'AI generated'
     LABEL_ALTERED: 'AI altered'
-    META_FIELD: 'AI content (none, altered or generated)'
+    META_FIELD: 'AI content'
     STATUS_NONE: 'No AI used'
     STATUS_ALTERED: 'AI altered'
     STATUS_GENERATED: 'AI generated'
+    AUTO_STAMP: 'Label every flagged image'
+    AUTO_STAMP_HELP: 'Stamps the label on every image flagged as AI generated or AI altered, including images in page Markdown and every srcset size, without the <code>ai_label</code> filter. Uses the default position and size. Needs Grav 2.2.8 or later; on older versions this setting has no effect.'
     SECTION_WORDING: 'Label wording'
     LABEL_GENERATED_TEXT: 'Label for AI generated images'
     LABEL_ALTERED_TEXT: 'Label for AI altered images'
@@ -44,7 +46,7 @@ en:
     FONT_HELP: 'A TrueType font such as <code>user://fonts/MyFont.ttf</code>. Leave empty for the bundled DejaVu Sans Bold, which covers Latin, Greek, Cyrillic and Hebrew.'
     SECTION_ADMIN: 'Admin'
     ADMIN_FIELD: 'AI field in the media editor'
-    ADMIN_FIELD_HELP: 'Adds an AI content field to the media metadata editor in Admin2. It is saved as <code>ai_status</code> in the image''s .meta.yaml file.'
+    ADMIN_FIELD_HELP: 'Adds an AI content dropdown to the media metadata editor in Admin2. It is saved as <code>ai_status</code> in the image''s .meta.yaml file.'
   ICU:
     PLUGIN_AI_LABEL: *en
 
@@ -52,10 +54,12 @@ de:
   PLUGIN_AI_LABEL: &de
     LABEL_GENERATED: 'KI-generiert'
     LABEL_ALTERED: 'KI-bearbeitet'
-    META_FIELD: 'KI-Inhalt (none, altered oder generated)'
+    META_FIELD: 'KI-Inhalt'
     STATUS_NONE: 'Keine KI verwendet'
     STATUS_ALTERED: 'KI-bearbeitet'
     STATUS_GENERATED: 'KI-generiert'
+    AUTO_STAMP: 'Alle markierten Bilder kennzeichnen'
+    AUTO_STAMP_HELP: 'Versieht jedes als KI-generiert oder KI-bearbeitet markierte Bild mit dem Hinweis, auch Bilder im Markdown einer Seite und jede srcset-Größe, ohne den Filter <code>ai_label</code>. Verwendet die Standardposition und -größe. Benötigt Grav 2.2.8 oder neuer; in älteren Versionen hat diese Einstellung keine Wirkung.'
     SECTION_WORDING: 'Text des Hinweises'
     LABEL_GENERATED_TEXT: 'Hinweis für KI-generierte Bilder'
     LABEL_ALTERED_TEXT: 'Hinweis für KI-bearbeitete Bilder'
@@ -91,6 +95,6 @@ de:
     FONT_HELP: 'Eine TrueType-Schrift wie <code>user://fonts/MyFont.ttf</code>. Leer lassen für die mitgelieferte DejaVu Sans Bold, die Latein, Griechisch, Kyrillisch und Hebräisch abdeckt.'
     SECTION_ADMIN: 'Admin'
     ADMIN_FIELD: 'KI-Feld im Medien-Editor'
-    ADMIN_FIELD_HELP: 'Fügt dem Metadaten-Editor für Medien in Admin2 ein Feld für KI-Inhalte hinzu. Es wird als <code>ai_status</code> in der .meta.yaml-Datei des Bildes gespeichert.'
+    ADMIN_FIELD_HELP: 'Fügt dem Metadaten-Editor für Medien in Admin2 eine Auswahl für KI-Inhalte hinzu. Es wird als <code>ai_status</code> in der .meta.yaml-Datei des Bildes gespeichert.'
   ICU:
     PLUGIN_AI_LABEL: *de
