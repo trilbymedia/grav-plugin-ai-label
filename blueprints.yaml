@@ -1,0 +1,171 @@
+name: AI Label
+slug: ai-label
+type: plugin
+version: 1.0.0
+testing: false
+description: Stamps a visible "AI generated" or "AI altered" label on images flagged as made or changed with AI
+icon: tag
+author:
+  name: Trilby Media, LLC
+  email: hello@trilby.media
+  url: https://trilby.media
+homepage: https://github.com/trilbymedia/grav-plugin-ai-label
+keywords: grav, plugin, ai, image, label, watermark, transparency
+bugs: https://github.com/trilbymedia/grav-plugin-ai-label/issues
+docs: https://github.com/trilbymedia/grav-plugin-ai-label/blob/develop/README.md
+license: MIT
+compatibility:
+  grav: ['2.0']
+
+dependencies:
+  - { name: grav, version: '>=2.0.0' }
+
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    section_wording:
+      type: section
+      title: PLUGIN_AI_LABEL.SECTION_WORDING
+      underline: true
+
+    labels.generated:
+      type: text
+      label: PLUGIN_AI_LABEL.LABEL_GENERATED_TEXT
+      help: PLUGIN_AI_LABEL.LABEL_TEXT_HELP
+      placeholder: PLUGIN_AI_LABEL.LABEL_GENERATED
+
+    labels.altered:
+      type: text
+      label: PLUGIN_AI_LABEL.LABEL_ALTERED_TEXT
+      help: PLUGIN_AI_LABEL.LABEL_TEXT_HELP
+      placeholder: PLUGIN_AI_LABEL.LABEL_ALTERED
+
+    section_design:
+      type: section
+      title: PLUGIN_AI_LABEL.SECTION_DESIGN
+      underline: true
+
+    position:
+      type: select
+      label: PLUGIN_AI_LABEL.POSITION
+      help: PLUGIN_AI_LABEL.POSITION_HELP
+      default: bottom-right
+      options:
+        top-left: PLUGIN_AI_LABEL.TOP_LEFT
+        top-center: PLUGIN_AI_LABEL.TOP_CENTER
+        top-right: PLUGIN_AI_LABEL.TOP_RIGHT
+        center-left: PLUGIN_AI_LABEL.CENTER_LEFT
+        center-center: PLUGIN_AI_LABEL.CENTER
+        center-right: PLUGIN_AI_LABEL.CENTER_RIGHT
+        bottom-left: PLUGIN_AI_LABEL.BOTTOM_LEFT
+        bottom-center: PLUGIN_AI_LABEL.BOTTOM_CENTER
+        bottom-right: PLUGIN_AI_LABEL.BOTTOM_RIGHT
+
+    size:
+      type: range
+      label: PLUGIN_AI_LABEL.SIZE
+      help: PLUGIN_AI_LABEL.SIZE_HELP
+      default: 30
+      validate:
+        type: int
+        min: 5
+        max: 100
+
+    font_size:
+      type: number
+      label: PLUGIN_AI_LABEL.FONT_SIZE
+      help: PLUGIN_AI_LABEL.FONT_SIZE_HELP
+      default: 24
+      validate:
+        type: int
+        min: 6
+        max: 200
+
+    text_color:
+      type: colorpicker
+      label: PLUGIN_AI_LABEL.TEXT_COLOR
+      default: '#ffffff'
+
+    background_color:
+      type: colorpicker
+      label: PLUGIN_AI_LABEL.BACKGROUND_COLOR
+      default: '#000000'
+
+    background_opacity:
+      type: range
+      label: PLUGIN_AI_LABEL.BACKGROUND_OPACITY
+      help: PLUGIN_AI_LABEL.BACKGROUND_OPACITY_HELP
+      default: 70
+      validate:
+        type: int
+        min: 0
+        max: 100
+
+    padding:
+      type: number
+      label: PLUGIN_AI_LABEL.PADDING
+      help: PLUGIN_AI_LABEL.PADDING_HELP
+      default: 10
+      validate:
+        type: int
+        min: 0
+        max: 200
+
+    margin:
+      type: number
+      label: PLUGIN_AI_LABEL.MARGIN
+      help: PLUGIN_AI_LABEL.MARGIN_HELP
+      default: 12
+      validate:
+        type: int
+        min: 0
+        max: 500
+
+    radius:
+      type: number
+      label: PLUGIN_AI_LABEL.RADIUS
+      default: 6
+      validate:
+        type: int
+        min: 0
+        max: 200
+
+    icon:
+      type: text
+      label: PLUGIN_AI_LABEL.ICON
+      help: PLUGIN_AI_LABEL.ICON_HELP
+      default: sparkle
+
+    font:
+      type: text
+      label: PLUGIN_AI_LABEL.FONT
+      help: PLUGIN_AI_LABEL.FONT_HELP
+      placeholder: user://fonts/MyFont.ttf
+
+    section_admin:
+      type: section
+      title: PLUGIN_AI_LABEL.SECTION_ADMIN
+      underline: true
+
+    admin_field:
+      type: toggle
+      label: PLUGIN_AI_LABEL.ADMIN_FIELD
+      help: PLUGIN_AI_LABEL.ADMIN_FIELD_HELP
+      highlight: 1
+      default: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

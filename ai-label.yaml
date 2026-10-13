@@ -1,0 +1,35 @@
+enabled: true
+
+# Label wording per status. Empty uses the translated default
+# (PLUGIN_AI_LABEL.LABEL_GENERATED / LABEL_ALTERED). Plain text or a translation key.
+labels:
+  generated: ''
+  altered: ''
+
+# Where the label goes when the ai_label filter is not given a position:
+# top-left, top-center, top-right, center-left, center, center-right,
+# bottom-left, bottom-center, bottom-right
+position: bottom-right
+
+# Largest share of the image the label may take, in percent of its width and height.
+size: 30
+
+# Largest text size in pixels. The label is never drawn bigger than this, and
+# shrinks on images where it would take more than `size` percent.
+font_size: 24
+
+text_color: '#ffffff'
+background_color: '#000000'
+background_opacity: 70   # 0 (no background) to 100 (solid)
+padding: 10              # space around the text inside the label, in pixels
+margin: 12               # space between the label and the edge of the image, in pixels
+radius: 6                # corner rounding, in pixels
+
+# sparkle (built in), none, or an image such as user://images/ai-icon.png
+icon: sparkle
+
+# A .ttf font such as user://fonts/MyFont.ttf. Empty uses the bundled DejaVu Sans Bold.
+font: ''
+
+# Adds an "AI content" field to the media metadata editor in Admin2.
+admin_field: true
